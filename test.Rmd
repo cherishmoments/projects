@@ -1,0 +1,56 @@
+---
+title: "Plot"
+output:
+  html_document:
+    df_print: paged
+---
+
+Important for R markdown
+1. create chunks
+2. run in chunks
+3. knit to pdf
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+Today we are going to plot some graphs using package tidyverse.
+First, we have to install the package
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+Next, we have to load in the dataset. We have the dataset in a csv file.
+
+plot a graph 
+```{r}
+
+```
+
+```{r}
+data("airquality")
+
+plot(airquality)
+
+head(airquality)
+
+summary(airquality)
+```
+We want to do a simple plot of temperature as the month go on.
+
+```{r}
+plot(airquality$Temp,airquality$month)
+```
+
+```{r}
+barplot( )
+```
+
