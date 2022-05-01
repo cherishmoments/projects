@@ -1,0 +1,80 @@
+---
+title: "Malaria"
+author: "jinyee"
+date: "4/30/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Load all the packages
+```{r All the packages}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyverse)
+library(plotly)
+```
+
+View the dataset
+```{r dataset}
+data = read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-13/malaria_inc.csv")
+malaria_cases = data %>% setNames(c("country", "code", "year", "incidence")) 
+str(malaria_cases)
+```
+
+Removing entity with no code since we are interested in only the countries
+```{r}
+malaria_countries = subset(malaria_cases, !malaria_cases$code=="")
+```
+
+To plot the incidence (per 1,000 population at risk) for the different countries throughout the different years
+```{r}
+overall = plot_ly(malaria_cases, type='choropleth', locations=malaria_cases$code, z= malaria_cases$incidence, text=malaria_cases$country, colorscale="coloraxis", frame = malaria_cases$year)
+
+overall= overall %>% colorbar(title ="Incidence") %>% layout(title="Incidence (per 1,000 population at risk) of malaria in different countries")
+overall
+
+```
+Observation: The different entities/countries' incidence changes over the years where some of the countries with higher incidence in 2000 (as represented by the red ones) changes to a lower incidence over the years. Therefore, we are interested in knowing if the incidence of these countries change/ continue to remain high over the years.
+
+
+
+To see which are the countries with the top 5 highest incidence in 2000 
+```{r}
+malaria_countries = malaria_countries[order(malaria_countries$incidence, malaria_countries$year, decreasing = T),]
+malaria_2000 = subset(malaria_countries, malaria_countries$year==2000)
+top_countries = malaria_2000[1:5,]
+top_countries
+top_fig = plot_ly(top_countries, type='choropleth', locations=top_countries$code, z= top_countries$incidence, text=top_countries$country, colorscale="coloraxis")
+
+top_fig = top_fig %>% colorbar(title ="Incidence") %>% layout(title="Top 5 highest incidence (per 1,000 population at risk) (2000)")
+top_fig
+
+
+```
+The countries with top 5 highest incidence in 2000 were Turkey, Ethiopia, Burkina Faso, Cote d'lvoire and Togo.
+
+
+
+To observe the trend of these countries over the years
+```{r}
+names = as.character(top_countries$country)
+top5_trend = malaria_cases[malaria_cases$country %in% names,]
+str(top5_trend)
+top5_trend %>% ggplot(aes(x=year, y=incidence, col=country)) + geom_line() 
+
+```
+
+Observation: From the graph, we observed that Turkey, with the highest incidence in 2000, had a sharp decrease in the incidence in 2005 and continued to have a delicining incidence over the years. The same can be said for Ethiopia as well.
+
+Remarks:
+- If given more information such as the demographics of the people with malaria, such as age, we can further investigate to see which age group is/are more affected by the malaria.
+
+
+
